@@ -1,0 +1,8 @@
+name: AutoBroadcaster
+main: com.github.skipperguy12.autobroadcaster.autobroadcaster
+version: .2
+description: Allows auto broadcasting, supports colors
+author: skipperguy12
+commands:
+    ab:
+        description: Reloads config

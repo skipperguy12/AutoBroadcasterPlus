@@ -1,0 +1,28 @@
+# To see what the colors look like check this out: http:www.minecraftwiki.netwikiFormatting_codes#Color_codes
+# &b = Aqua 
+# &0 = Black
+# &l = Bold
+# &3 = Dark Aqua
+# &1 = Dark Blue
+# &8 = Dark Gray 
+# &2  = Dark Green
+# &4 = Dark Red
+# &6 = Gold
+# &7 = Gray
+# &a = Green
+# &o = Italic
+# &k = Random character(s)
+# &c = Red
+# &r = Reset 	WARNING: If you have &r%player% &resetdied by %killer% Everything after the reset will be back the basic color.
+# &m = Strike
+# &n = Underline
+# &f = White
+# &e = Yellow
+# This allows for huge customizability!
+
+
+#Who will be the announcer? Ex: [AutoBroadcaster]: Message
+announcerName: '[&4AutoBroadcaster&f]: '
+
+#Interval, in seconds
+interval: 60
