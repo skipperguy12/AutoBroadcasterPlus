@@ -1,4 +1,4 @@
-package me.skipperguy12.autobroadcasterplus.utils;
+package me.skipperguy12.autobroadcasterplus;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,8 +11,8 @@ import java.io.File;
  */
 public class Config {
 
-    private static FileConfiguration config;
-    private static File dataFolder;
+    protected static FileConfiguration config;
+    protected static File dataFolder;
 
 
     /**
@@ -62,32 +62,35 @@ public class Config {
      * @param plugin instance of plugin
      */
     public static void load(Plugin plugin, String fileName) {
-        plugin.saveDefaultConfig();
         dataFolder = plugin.getDataFolder();
         config = YamlConfiguration.loadConfiguration(new File(dataFolder, fileName));
     }
 
 
     /**
-     * Config variable; who is the announcer?
+     * Config section; broadcaster section
      */
-    public static String announcerName = get("announcerName", "[&4AutoBroadcaster&f]: ");
+    public static class Broadcaster {
+        /**
+         * Config variable; who is the announcer?
+         */
+        public static String announcerName = get("broadcasterannouncerName", "[&4AutoBroadcaster&f]: ");
 
 
-    /**
-     * Config variable; how often, in seconds, should the message be broadcasted?
-     */
-    public static Integer interval = get("interval", 60);
+        /**
+         * Config variable; how often, in seconds, should the message be broadcasted?
+         */
+        public static Integer interval = get("broadcasterinterval", 60);
 
-    /**
-     * Config variable; is debugging enabled?
-     */
-    public static boolean debugging = get("debugging", false);
+        /**
+         * Config variable; is debugging enabled?
+         */
+        public static boolean debugging = get("broadcasterdebugging", false);
 
-    /**
-     * Config variable; delimeter to split messages by
-     */
-    public static String delimeter = get("delimeter", "\n");
+        /**
+         * Config variable; delimeter to split messages by
+         */
+        public static String delimeter = get("broadcasterdelimeter", "\n");
 
-
+    }
 } 

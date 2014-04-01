@@ -1,6 +1,6 @@
 package me.skipperguy12.autobroadcasterplus;
 
-import me.skipperguy12.autobroadcasterplus.utils.Config;
+import me.skipperguy12.autobroadcasterplus.Config;
 import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.plugin.Plugin;
@@ -49,7 +49,7 @@ public class Messages {
             throw new IllegalArgumentException("Cannot read file at location "
                     + messagesFile.getAbsolutePath());
         }
-        messages = Arrays.asList(contents.split(Config.delimeter));
+        messages = Arrays.asList(contents.split(Config.Broadcaster.delimeter));
     }
 
     /**

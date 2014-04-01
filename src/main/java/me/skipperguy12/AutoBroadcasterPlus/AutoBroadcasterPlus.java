@@ -4,7 +4,7 @@ import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
 import me.skipperguy12.autobroadcasterplus.runnables.MessagesRunnable;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
-import me.skipperguy12.autobroadcasterplus.utils.Config;
+import me.skipperguy12.autobroadcasterplus.Config;
 import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,12 +43,15 @@ public class AutoBroadcasterPlus extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        Config.load(this, "config.yml");
+
         // Set singleton instance
         instance = this;
 
-        // Load config and Log
-        Config.load(this, "config.yml");
+        messages = new Messages();
         messages.load(this, "messages.txt");
+
         Log.load(this);
 
         // Scan plugins to try and find the settings plugin
@@ -58,7 +61,7 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         }
 
         // Start the task
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MessagesRunnable(this), 0L, Config.interval * 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MessagesRunnable(this), 0L, Config.Broadcaster.interval * 20L);
 
         // Set up commands and register listeners
         this.setupCommands();

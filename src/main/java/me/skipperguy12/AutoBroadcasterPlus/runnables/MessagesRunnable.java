@@ -5,7 +5,7 @@ import me.skipperguy12.autobroadcasterplus.AutoBroadcasterPlus;
 import me.skipperguy12.autobroadcasterplus.Messages;
 import me.skipperguy12.autobroadcasterplus.settings.AnnouncementOptions;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
-import me.skipperguy12.autobroadcasterplus.utils.Config;
+import me.skipperguy12.autobroadcasterplus.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -57,7 +57,7 @@ public class MessagesRunnable implements Runnable {
     private void broadcastMessage(String message) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             message.replaceAll("&", "§").replace("%player%", p.getName());
-            String announcerName = Config.announcerName.replaceAll("&", "§").replace("%player%", p.getName());
+            String announcerName = Config.Broadcaster.announcerName.replaceAll("&", "§").replace("%player%", p.getName());
 
             if (instance.settingsPlugin) {
                 boolean showAnnouncement = getManager(p).getValue(Settings.ANNOUNCE, AnnouncementOptions.class) == AnnouncementOptions.ON;
