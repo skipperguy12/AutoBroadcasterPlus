@@ -3,3 +3,5 @@ announcerName: '[&4AutoBroadcaster&f]: '
 
 #Interval, in seconds
 interval: 60
+
+debugging: false
