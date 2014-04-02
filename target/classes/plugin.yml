@@ -1,7 +1,0 @@
-name: AutoBroadcaster
-main: me.skipperguy12.autobroadcasterplus.AutoBroadcasterPlus
-version: 0.4
-description: AutoBroadcasterPlus by skipperguy12
-commands:
-    ab:
-        description: Core command for AutoBroadcaster
