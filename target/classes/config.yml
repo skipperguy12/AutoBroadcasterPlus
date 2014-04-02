@@ -5,5 +5,14 @@ broadcaster:
     #Interval, in seconds
     interval: 60
 
+    #What the messages file should be split by (Don't modify this unless you know what you're doing!)
+    delimeter: '\n'
+
     #Should the plugin debug?
     debugging: false
+
+    #Should messages be sent to console as well?
+    broadcast-to-console: false
+
+    #Minimum number of players before any message is broadcasted (0 to broadcast even if no one is online)
+    min-players: 1

@@ -1,19 +1,16 @@
 package me.skipperguy12.autobroadcasterplus.runnables;
 
-import me.anxuiz.settings.bukkit.PlayerSettings;
 import me.skipperguy12.autobroadcasterplus.AutoBroadcasterPlus;
-import me.skipperguy12.autobroadcasterplus.Messages;
+import me.skipperguy12.autobroadcasterplus.Config;
 import me.skipperguy12.autobroadcasterplus.settings.AnnouncementOptions;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
-import me.skipperguy12.autobroadcasterplus.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
-import static me.anxuiz.settings.bukkit.PlayerSettings.*;
+import static me.anxuiz.settings.bukkit.PlayerSettings.getManager;
 
 public class MessagesRunnable implements Runnable {
 
@@ -56,24 +53,33 @@ public class MessagesRunnable implements Runnable {
     // Broadcasts message to players who have the setting enabled
     private void broadcastMessage(String message) {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            message.replaceAll("&", "§").replace("%player%", p.getName());
-            String announcerName = Config.Broadcaster.announcerName.replaceAll("&", "§").replace("%player%", p.getName());
+
+            String line = ChatColor.translateAlternateColorCodes('&', message).replace("%player%", p.getName());
+            String announcerName = ChatColor.translateAlternateColorCodes('&', Config.Broadcaster.announcerName).replace("%player%", p.getName());
 
             if (instance.settingsPlugin) {
                 boolean showAnnouncement = getManager(p).getValue(Settings.ANNOUNCE, AnnouncementOptions.class) == AnnouncementOptions.ON;
 
                 if ((showAnnouncement)) {
-                    p.sendMessage(announcerName + ChatColor.WHITE + message);
+                    p.sendMessage(announcerName + ChatColor.WHITE + line);
+                    if (Config.Broadcaster.broadcast_to_console)
+                        Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
+
                 }
             } else {
-                p.sendMessage(announcerName + ChatColor.WHITE + message);
+                p.sendMessage(announcerName + ChatColor.WHITE + line);
+                if (Config.Broadcaster.broadcast_to_console)
+                    Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
+
             }
+
 
         }
     }
 
     @Override
     public void run() {
-        broadcastMessage(getNextMessageAndIncrement());
+        if (Bukkit.getOnlinePlayers().length >= Config.Broadcaster.min_players)
+            broadcastMessage(getNextMessageAndIncrement());
     }
 }

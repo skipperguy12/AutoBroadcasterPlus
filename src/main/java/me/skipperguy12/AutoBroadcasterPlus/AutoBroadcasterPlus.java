@@ -2,6 +2,7 @@ package me.skipperguy12.autobroadcasterplus;
 
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
+import me.skipperguy12.autobroadcasterplus.commands.AutoBroadcasterParentCommand;
 import me.skipperguy12.autobroadcasterplus.runnables.MessagesRunnable;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
 import me.skipperguy12.autobroadcasterplus.Config;
@@ -97,7 +98,7 @@ public class AutoBroadcasterPlus extends JavaPlugin {
             }
         };
         CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
-        // TODO: Register commands here
+        cmdRegister.register(AutoBroadcasterParentCommand.class);
     }
 
     /**

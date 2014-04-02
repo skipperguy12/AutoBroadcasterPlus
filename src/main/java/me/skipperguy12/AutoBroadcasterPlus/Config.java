@@ -74,23 +74,34 @@ public class Config {
         /**
          * Config variable; who is the announcer?
          */
-        public static String announcerName = get("broadcasterannouncerName", "[&4AutoBroadcaster&f]: ");
+        public static String announcerName = get("broadcaster.announcerName", "[&4AutoBroadcaster&f]: ");
 
 
         /**
          * Config variable; how often, in seconds, should the message be broadcasted?
          */
-        public static Integer interval = get("broadcasterinterval", 60);
+        public static Integer interval = get("broadcaster.interval", 60);
 
         /**
          * Config variable; is debugging enabled?
          */
-        public static boolean debugging = get("broadcasterdebugging", false);
+        public static boolean debugging = get("broadcaster.debugging", false);
 
         /**
          * Config variable; delimeter to split messages by
          */
-        public static String delimeter = get("broadcasterdelimeter", "\n");
+        public static String delimeter = get("broadcaster.delimeter", "\n");
+
+        /**
+         * Config variable; should messages be broadcasted to console?
+         */
+        public static boolean broadcast_to_console = get("broadcaster.broadcast-to-console", false);
+
+        /**
+         * Config variable; min number of people before messages will be broadcasted
+         */
+        public static Integer min_players = get("broadcaster.min-players", 1);
+
 
     }
 } 
