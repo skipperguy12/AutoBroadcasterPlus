@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>AutoBroadcasterPlus</groupId>
   <artifactId>AutoBroadcasterPlus</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>AutoBroadcasterPlus</name>
   <description>Automatic broadcasting plugin</description>
 
