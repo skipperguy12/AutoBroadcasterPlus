@@ -1,11 +1,10 @@
-package me.skipperguy12.AutoBroadcasterPlus.Settings;
+package me.skipperguy12.autobroadcasterplus.settings;
 
 import me.anxuiz.settings.Setting;
 import me.anxuiz.settings.SettingBuilder;
 import me.anxuiz.settings.SettingCallbackManager;
 import me.anxuiz.settings.SettingRegistry;
 import me.anxuiz.settings.bukkit.PlayerSettings;
-import me.anxuiz.settings.types.BooleanType;
 import me.anxuiz.settings.types.EnumType;
 
 public class Settings {

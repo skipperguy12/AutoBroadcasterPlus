@@ -1,165 +1,138 @@
-package me.skipperguy12.AutoBroadcasterPlus;
+package me.skipperguy12.autobroadcasterplus;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.PrintStream;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.util.logging.Logger;
-
-import me.anxuiz.settings.bukkit.PlayerSettings;
-import me.skipperguy12.AutoBroadcasterPlus.Settings.AnnouncementOptions;
-import me.skipperguy12.AutoBroadcasterPlus.Settings.Settings;
-
+import com.sk89q.bukkit.util.CommandsManagerRegistration;
+import com.sk89q.minecraft.util.commands.*;
+import me.skipperguy12.autobroadcasterplus.commands.AutoBroadcasterParentCommand;
+import me.skipperguy12.autobroadcasterplus.runnables.MessagesRunnable;
+import me.skipperguy12.autobroadcasterplus.settings.Settings;
+import me.skipperguy12.autobroadcasterplus.Config;
+import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.FileConfigurationOptions;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
+/**
+ * Plugin main class
+ */
 public class AutoBroadcasterPlus extends JavaPlugin {
-	private int currentLine = 0;
-	private int tid = 0;
-	private int running = 1;
-	public boolean settingsPlugin = false;
+    /**
+     * Holds instance for plugin
+     */
+    private static AutoBroadcasterPlus instance;
 
-	public void onDisable() {
-		PluginDescriptionFile pdfFile = getDescription();
-		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " has been disabled!");
-	}
+    /**
+     * sk89q's command framework CommandsManager
+     */
+    private CommandsManager<CommandSender> commands;
 
-	public void onEnable() {
-		if (Bukkit.getPluginManager().getPlugin("BukkitSettings") != null) {
-			settingsPlugin = true;
-			Settings.register();
-		}
+    /**
+     * has the settings plugin been found?
+     */
+    public boolean settingsPlugin = false;
 
-		PluginDescriptionFile pdfFile = getDescription();
-		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
+    /**
+     * handles the messages
+     */
+    public Messages messages;
 
-		if (getDataFolder().exists()) {
-			getLogger().info("File is there.");
-		} else {
-			createConfig(new File(getDataFolder(), "config.yml"));
-			getLogger().info("File didn't exist");
-		}
+    /**
+     * Called when the plugin gets enabled
+     */
+    @Override
+    public void onEnable() {
+        saveDefaultConfig();
+        Config.load(this, "config.yml");
 
-		final File msgs = new File(getDataFolder() + File.separator + "messages.txt");
-		if (!msgs.exists()) {
-			try {
-				msgs.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+        // Set singleton instance
+        instance = this;
 
-		tid = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-			public void run() {
-				try {
-					AutoBroadcasterPlus.this.broadcastMessages(msgs.getPath());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}, 0L, getConfig().getLong("interval") * 20L);
+        messages = new Messages();
+        messages.load(this, "messages.txt");
 
-		try {
-			Metrics metrics = new Metrics(this);
-			metrics.start();
-		} catch (IOException e) {
-			// Failed to submit the stats :-(
-		}
-	}
+        Log.load(this);
 
-	public void createConfig(File f) {
-		InputStream cfgStream = getResource("config.yml");
-		if (!getDataFolder().exists())
-			getDataFolder().mkdirs();
-		try {
-			FileOutputStream fos = new FileOutputStream(f);
-			ReadableByteChannel rbc = Channels.newChannel(cfgStream);
-			fos.getChannel().transferFrom(rbc, 0L, 16777216L);
-			fos.close();
-		} catch (Exception e) {
-			getLogger().info("There was an error in creating the config. Using bukkit methods to do so.");
-			getConfig().options().copyDefaults(true);
-			saveConfig();
-		}
-	}
+        // Scan plugins to try and find the settings plugin
+        if (Bukkit.getPluginManager().getPlugin("BukkitSettings") != null) {
+            settingsPlugin = true;
+            Settings.register();
+        }
 
-	public void broadcastMessages(String filename) throws IOException {
-		if (numberOfOnlinePlayers() >= 1) {
-			FileInputStream fs = new FileInputStream(filename);
-			BufferedReader br = new BufferedReader(new InputStreamReader(fs));
-			for (int i = 0; i < currentLine; i++) {
-				br.readLine();
-			}
+        // Start the task
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MessagesRunnable(this), 0L, Config.Broadcaster.interval * 20L);
 
-			String line = br.readLine().replaceAll("&", "§");
-			String ann = getConfig().getString("announcerName").replaceAll("&", "§");
+        // Set up commands and register listeners
+        this.setupCommands();
+        this.registerListeners();
 
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				String line2 = line;
-				String ann2 = ann;
-				line2 = line.replace("%player%", p.getName());
-				ann2 = ann.replace("%player%", p.getName());
+    }
 
-				if (settingsPlugin) {
-					boolean showAnnouncement = PlayerSettings.getManager(p).getValue(Settings.ANNOUNCE, AnnouncementOptions.class) == AnnouncementOptions.ON;
+    /**
+     * Called when the plugin gets disabled
+     */
+    public void onDisable() {
+        instance = null;
+    }
 
-					if ((showAnnouncement)) {
-						p.sendMessage(ann2 + "" + ChatColor.WHITE + line2);
-					}
-				} else {
-					p.sendMessage(ann2 + "" + ChatColor.WHITE + line2);
-				}
+    // Registers Events for a listener
+    private void registerEvents(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, this);
+    }
 
-			}
-			LineNumberReader lnr = new LineNumberReader(new FileReader(new File(filename)));
-			lnr.skip(9223372036854775807L);
-			int lastLine = lnr.getLineNumber();
-			if (currentLine + 1 == lastLine + 1)
-				currentLine = 0;
-			else
-				currentLine += 1;
-			lnr.close();
+    // Registers the Listeners that will be on while the plugin is enabled
+    private void registerListeners() {
+        // TODO: Register listeners
+    }
 
-		}
+    /**
+     * sk89q's command framework method to setup commands from onEnable
+     */
+    private void setupCommands() {
+        this.commands = new CommandsManager<CommandSender>() {
+            @Override
+            public boolean hasPermission(CommandSender sender, String perm) {
+                return sender instanceof ConsoleCommandSender || sender.hasPermission(perm);
+            }
+        };
+        CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
+        cmdRegister.register(AutoBroadcasterParentCommand.class);
+    }
 
-	}
+    /**
+     * Gets instance of plugin
+     *
+     * @return main plugin instance
+     */
+    public static AutoBroadcasterPlus getInstance() {
+        return instance;
+    }
 
-	public static int numberOfOnlinePlayers() {
-		Player[] onlinePlayers = Bukkit.getServer().getOnlinePlayers();
-		return onlinePlayers.length;
-	}
+    // Passes commands from Bukkit to sk89q
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        try {
+            this.commands.execute(cmd.getName(), args, sender, sender);
+        } catch (CommandPermissionsException e) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission.");
+        } catch (MissingNestedCommandException e) {
+            sender.sendMessage(ChatColor.RED + e.getUsage());
+        } catch (CommandUsageException e) {
+            sender.sendMessage(ChatColor.RED + e.getMessage());
+            sender.sendMessage(ChatColor.RED + e.getUsage());
+        } catch (WrappedCommandException e) {
+            if (e.getCause() instanceof NumberFormatException) {
+                sender.sendMessage(ChatColor.RED + "Number expected, string received instead.");
+            } else {
+                sender.sendMessage(ChatColor.RED + "An error has occurred. See console.");
+                e.printStackTrace();
+            }
+        } catch (CommandException e) {
+            sender.sendMessage(ChatColor.RED + e.getMessage());
+        }
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (cmd.getName().equalsIgnoreCase("ab")) {
-			if ((sender.isOp()) || (sender.hasPermission("ab.reload"))) {
-				reloadConfig();
-				sender.sendMessage("" + ChatColor.AQUA + "[AutoBroadcaster]: " + "" + ChatColor.RED + "Auto Broadcaster Configuration files reloaded successfully!");
-				return true;
-			}
-
-			sender.sendMessage("" + ChatColor.AQUA + "[AutoBroadcaster]: " + "" + ChatColor.RED + "You do not have sufficient permissions! (OP or ab.reload)");
-		}
-
-		return false;
-	}
+        return true;
+    }
 }
