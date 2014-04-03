@@ -1,5 +1,6 @@
 package me.skipperguy12.autobroadcasterplus;
 
+import me.skipperguy12.autobroadcasterplus.utils.LiquidMetal;
 import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,12 +33,14 @@ public class MessageFile {
 
 
     public MessageFile(File file) {
+        Log.debug("Attempting to parse message file at " + file.getAbsolutePath());
         this.file = file;
 
         // Check if exists, create if not
         if (!file.exists()) {
             try {
                 file.createNewFile();
+                Log.debug("Created new file");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -45,16 +48,19 @@ public class MessageFile {
 
         // Check if global or per world
         String fileName = FilenameUtils.getBaseName(file.getName());
-        if (fileName.contains("messages-")) { // If this is a global messages file...
-            this.global = true;
+        if (fileName.contains("messages-")) { // If this is not global messages file...
+            this.global = false;
             String worldName = StringUtils.substringAfter(fileName, "-");
-            if (Bukkit.getWorld(worldName) != null)
+            if (Bukkit.getWorld(worldName) != null) {
                 this.world = Bukkit.getWorld(worldName);
+                Log.debug("File is non-global, messages will be broadcasted to players in: " + worldName);
+            }
             else
                 Log.log(Level.WARNING, "Unable to load message file: " + file.getName() + " because the world specified, " + worldName + ", does not exist.");
-        } else
-            this.global = false;
-
+        } else {
+            this.global = true;
+            Log.debug("File is global, messages will be broadcasted to everyone");
+        }
 
         // Parse messages into list
         String contents = "";
@@ -66,6 +72,12 @@ public class MessageFile {
                     + file.getAbsolutePath());
         }
         messages = Arrays.asList(contents.split(Config.Broadcaster.delimeter));
+        Log.debug("Messages in this file: " + me.skipperguy12.autobroadcasterplus.utils.StringUtils.listToEnglishCompound(messages, new LiquidMetal.StringProvider<String>() {
+            @Override
+            public String get(String c) {
+                return null;
+            }
+        }));
 
     }
 

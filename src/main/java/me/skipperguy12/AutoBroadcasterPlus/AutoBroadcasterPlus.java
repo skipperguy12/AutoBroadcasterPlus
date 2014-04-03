@@ -50,9 +50,11 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         // Set singleton instance
         instance = this;
 
+        Log.load(this);
+        Log.setDebugging(Config.Broadcaster.debugging);
+
         messanger = new Messenger(getDataFolder());
 
-        Log.load(this);
 
         // Scan plugins to try and find the settings plugin
         if (Bukkit.getPluginManager().getPlugin("BukkitSettings") != null) {
