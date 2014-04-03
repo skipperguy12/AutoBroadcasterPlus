@@ -2,8 +2,10 @@ package me.skipperguy12.autobroadcasterplus.runnables;
 
 import me.skipperguy12.autobroadcasterplus.AutoBroadcasterPlus;
 import me.skipperguy12.autobroadcasterplus.Config;
+import me.skipperguy12.autobroadcasterplus.MessageFile;
 import me.skipperguy12.autobroadcasterplus.settings.AnnouncementOptions;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
+import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,15 +19,20 @@ public class MessagesRunnable implements Runnable {
     // Instance of plugin
     private AutoBroadcasterPlus instance;
 
+    // File storing messages
+    private MessageFile messageFile;
+
     // List of messages
     private List<String> messages;
 
     // Position in list
     private int current = -1;
 
-    public MessagesRunnable(AutoBroadcasterPlus instance) {
+    public MessagesRunnable(AutoBroadcasterPlus instance, MessageFile messageFile) {
         this.instance = instance;
-        this.messages = instance.messages.getMessages();
+        this.messageFile = messageFile;
+        Log.debug("Runnable for " + messageFile.getFile().getName() + " has been instantiated.");
+        this.messages = messageFile.getMessages();
     }
 
     /**
@@ -50,36 +57,47 @@ public class MessagesRunnable implements Runnable {
         return messages.get(current);
     }
 
-    // Broadcasts message to players who have the setting enabled
-    private void broadcastMessage(String message) {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+    private void sendMessage(Player p, String message) {
+        String line = ChatColor.translateAlternateColorCodes('&', message).replace("%player%", p.getName());
+        String announcerName = ChatColor.translateAlternateColorCodes('&', (String) Config.getSettingFromWorld(messageFile.getWorld(), "announcerName", Config.Broadcaster.Global.announcerName)).replace("%player%", p.getName());
 
-            String line = ChatColor.translateAlternateColorCodes('&', message).replace("%player%", p.getName());
-            String announcerName = ChatColor.translateAlternateColorCodes('&', Config.Broadcaster.announcerName).replace("%player%", p.getName());
+        if (instance.settingsPlugin) {
+            boolean showAnnouncement = getManager(p).getValue(Settings.ANNOUNCE, AnnouncementOptions.class) == AnnouncementOptions.ON;
 
-            if (instance.settingsPlugin) {
-                boolean showAnnouncement = getManager(p).getValue(Settings.ANNOUNCE, AnnouncementOptions.class) == AnnouncementOptions.ON;
-
-                if ((showAnnouncement)) {
-                    p.sendMessage(announcerName + ChatColor.WHITE + line);
-                    if (Config.Broadcaster.broadcast_to_console)
-                        Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
-
-                }
-            } else {
+            if ((showAnnouncement)) {
                 p.sendMessage(announcerName + ChatColor.WHITE + line);
-                if (Config.Broadcaster.broadcast_to_console)
+                if (Config.Broadcaster.Global.broadcast_to_console)
                     Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
 
             }
-
+        } else {
+            p.sendMessage(announcerName + ChatColor.WHITE + line);
+            if (Config.getSettingFromWorld(messageFile.getWorld(), "broadcast-to-console", Config.Broadcaster.Global.broadcast_to_console))
+                Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
 
         }
     }
 
+    // Broadcasts message to players who have the setting enabled
+
+    private void broadcastMessage(String message) {
+        if (messageFile.isGlobal()) {
+            Log.debug("Broadcasting: " + message + " to everyone.");
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                sendMessage(p, message);
+            }
+        } else {
+            Log.debug("Broadcasting: " + message + " to players in " + messageFile.getWorld().getName());
+            for (Player p : messageFile.getWorld().getPlayers()) {
+                sendMessage(p, message);
+            }
+        }
+    }
+
+
     @Override
     public void run() {
-        if (Bukkit.getOnlinePlayers().length >= Config.Broadcaster.min_players)
+        if (Bukkit.getOnlinePlayers().length >= ((Integer) Config.getSettingFromWorld(messageFile.getWorld(), "min-players", Config.Broadcaster.Global.min_players)))
             broadcastMessage(getNextMessageAndIncrement());
     }
 }

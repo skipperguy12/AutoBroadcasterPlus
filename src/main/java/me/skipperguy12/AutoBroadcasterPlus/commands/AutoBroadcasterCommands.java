@@ -5,6 +5,7 @@ import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandPermissions;
 import me.skipperguy12.autobroadcasterplus.AutoBroadcasterPlus;
+import me.skipperguy12.autobroadcasterplus.Messenger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
@@ -24,6 +25,9 @@ public class AutoBroadcasterCommands {
     @CommandPermissions({"ab.reload"})
     public static void reload(final CommandContext args, CommandSender sender) throws CommandException {
         AutoBroadcasterPlus.getInstance().reloadConfig();
+        AutoBroadcasterPlus.getInstance().messanger = new Messenger(AutoBroadcasterPlus.getInstance().getDataFolder());
+        AutoBroadcasterPlus.getInstance().messanger.reloadSchedulers();
+
         sender.sendMessage(ChatColor.AQUA + "[AutoBroadcaster]: " + ChatColor.RED + "Auto Broadcaster Configuration files reloaded successfully!");
     }
 }

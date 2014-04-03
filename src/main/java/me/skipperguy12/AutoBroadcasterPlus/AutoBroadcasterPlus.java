@@ -3,9 +3,7 @@ package me.skipperguy12.autobroadcasterplus;
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
 import me.skipperguy12.autobroadcasterplus.commands.AutoBroadcasterParentCommand;
-import me.skipperguy12.autobroadcasterplus.runnables.MessagesRunnable;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
-import me.skipperguy12.autobroadcasterplus.Config;
 import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,7 +35,7 @@ public class AutoBroadcasterPlus extends JavaPlugin {
     /**
      * handles the messages
      */
-    public Messages messages;
+    public Messenger messanger;
 
     /**
      * Called when the plugin gets enabled
@@ -50,10 +48,11 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         // Set singleton instance
         instance = this;
 
-        messages = new Messages();
-        messages.load(this, "messages.txt");
-
         Log.load(this);
+        Log.setDebugging(Config.Broadcaster.Global.debugging);
+
+        messanger = new Messenger(getDataFolder());
+
 
         // Scan plugins to try and find the settings plugin
         if (Bukkit.getPluginManager().getPlugin("BukkitSettings") != null) {
@@ -61,8 +60,8 @@ public class AutoBroadcasterPlus extends JavaPlugin {
             Settings.register();
         }
 
-        // Start the task
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MessagesRunnable(this), 0L, Config.Broadcaster.interval * 20L);
+        // Start the initial looping of files and schedulers
+        messanger.reloadSchedulers();
 
         // Set up commands and register listeners
         this.setupCommands();

@@ -18,7 +18,7 @@ public class AutoBroadcasterParentCommand {
      */
     @Command(aliases = { "autobroadcaster", "ab" }, desc = "Commands for AutoBroadcasterPlus", min = 0, max = -1)
     @NestedCommand(AutoBroadcasterCommands.class) //All commands will get passed on to QuickFillCommands.class
-    public static void quickfill(final CommandContext args, CommandSender sender) throws CommandException {
+    public static void autobroadcaster(final CommandContext args, CommandSender sender) throws CommandException {
     }
 }
 
