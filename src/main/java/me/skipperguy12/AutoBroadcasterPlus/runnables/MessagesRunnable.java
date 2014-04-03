@@ -2,6 +2,7 @@ package me.skipperguy12.autobroadcasterplus.runnables;
 
 import me.skipperguy12.autobroadcasterplus.AutoBroadcasterPlus;
 import me.skipperguy12.autobroadcasterplus.Config;
+import me.skipperguy12.autobroadcasterplus.MessageFile;
 import me.skipperguy12.autobroadcasterplus.settings.AnnouncementOptions;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
 import org.bukkit.Bukkit;
@@ -23,9 +24,9 @@ public class MessagesRunnable implements Runnable {
     // Position in list
     private int current = -1;
 
-    public MessagesRunnable(AutoBroadcasterPlus instance) {
+    public MessagesRunnable(AutoBroadcasterPlus instance, MessageFile messageFile) {
         this.instance = instance;
-        this.messages = instance.messages.getMessages();
+        this.messages = messageFile.getMessages();
     }
 
     /**

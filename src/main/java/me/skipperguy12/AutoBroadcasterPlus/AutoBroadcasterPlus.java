@@ -37,7 +37,7 @@ public class AutoBroadcasterPlus extends JavaPlugin {
     /**
      * handles the messages
      */
-    public Messages messages;
+    public Messenger messanger;
 
     /**
      * Called when the plugin gets enabled
@@ -50,8 +50,7 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         // Set singleton instance
         instance = this;
 
-        messages = new Messages();
-        messages.load(this, "messages.txt");
+        messanger = new Messenger(getDataFolder());
 
         Log.load(this);
 
@@ -61,8 +60,8 @@ public class AutoBroadcasterPlus extends JavaPlugin {
             Settings.register();
         }
 
-        // Start the task
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new MessagesRunnable(this), 0L, Config.Broadcaster.interval * 20L);
+        // Start the initial looping of files and schedulers
+        messanger.reloadSchedulers();
 
         // Set up commands and register listeners
         this.setupCommands();
