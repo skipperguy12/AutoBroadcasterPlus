@@ -59,20 +59,20 @@ public class MessagesRunnable implements Runnable {
 
     private void sendMessage(Player p, String message) {
         String line = ChatColor.translateAlternateColorCodes('&', message).replace("%player%", p.getName());
-        String announcerName = ChatColor.translateAlternateColorCodes('&', Config.Broadcaster.announcerName).replace("%player%", p.getName());
+        String announcerName = ChatColor.translateAlternateColorCodes('&', (String) Config.getSettingFromWorld(messageFile.getWorld(), "announcerName", Config.Broadcaster.Global.announcerName)).replace("%player%", p.getName());
 
         if (instance.settingsPlugin) {
             boolean showAnnouncement = getManager(p).getValue(Settings.ANNOUNCE, AnnouncementOptions.class) == AnnouncementOptions.ON;
 
             if ((showAnnouncement)) {
                 p.sendMessage(announcerName + ChatColor.WHITE + line);
-                if (Config.Broadcaster.broadcast_to_console)
+                if (Config.Broadcaster.Global.broadcast_to_console)
                     Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
 
             }
         } else {
             p.sendMessage(announcerName + ChatColor.WHITE + line);
-            if (Config.Broadcaster.broadcast_to_console)
+            if (Config.getSettingFromWorld(messageFile.getWorld(), "broadcast-to-console", Config.Broadcaster.Global.broadcast_to_console))
                 Bukkit.getConsoleSender().sendMessage(announcerName + ChatColor.WHITE + line);
 
         }
@@ -86,8 +86,7 @@ public class MessagesRunnable implements Runnable {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 sendMessage(p, message);
             }
-        }
-        else {
+        } else {
             Log.debug("Broadcasting: " + message + " to players in " + messageFile.getWorld().getName());
             for (Player p : messageFile.getWorld().getPlayers()) {
                 sendMessage(p, message);
@@ -98,7 +97,7 @@ public class MessagesRunnable implements Runnable {
 
     @Override
     public void run() {
-        if (Bukkit.getOnlinePlayers().length >= Config.Broadcaster.min_players)
+        if (Bukkit.getOnlinePlayers().length >= ((Integer) Config.getSettingFromWorld(messageFile.getWorld(), "min-players", Config.Broadcaster.Global.min_players)))
             broadcastMessage(getNextMessageAndIncrement());
     }
 }

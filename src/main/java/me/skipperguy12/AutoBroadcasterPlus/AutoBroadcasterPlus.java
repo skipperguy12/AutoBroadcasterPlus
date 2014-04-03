@@ -3,9 +3,7 @@ package me.skipperguy12.autobroadcasterplus;
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
 import me.skipperguy12.autobroadcasterplus.commands.AutoBroadcasterParentCommand;
-import me.skipperguy12.autobroadcasterplus.runnables.MessagesRunnable;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
-import me.skipperguy12.autobroadcasterplus.Config;
 import me.skipperguy12.autobroadcasterplus.utils.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,7 +49,7 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         instance = this;
 
         Log.load(this);
-        Log.setDebugging(Config.Broadcaster.debugging);
+        Log.setDebugging(Config.Broadcaster.Global.debugging);
 
         messanger = new Messenger(getDataFolder());
 

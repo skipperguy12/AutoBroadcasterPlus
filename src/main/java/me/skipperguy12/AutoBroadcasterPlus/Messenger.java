@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -19,6 +20,14 @@ public class Messenger {
     private List<Integer> taskIds = Lists.newArrayList();
 
     public Messenger(File dataFolder) {
+        if(!new File(dataFolder, "messages.txt").exists())
+            try {
+                new File(dataFolder, "messages.txt").createNewFile();
+                Log.log("Generated global message file.");
+            } catch (IOException e) {
+                Log.log(e);
+            }
+
         Log.debug("Scanning directory " + dataFolder.getAbsolutePath() +":");
         for (File file : dataFolder.listFiles()) {
             Log.debug(file.getName());
@@ -44,7 +53,7 @@ public class Messenger {
         for (MessageFile messageFile : messageFileList)
             taskIds.add(Bukkit.getScheduler().scheduleSyncRepeatingTask(AutoBroadcasterPlus.getInstance(),
                     new MessagesRunnable(AutoBroadcasterPlus.getInstance(), messageFile)
-                    , 0L, Config.Broadcaster.interval * 20L));
+                    , 0L, Config.Broadcaster.Global.interval * 20L));
 
         Log.debug("Task ID's now running(" + taskIds.size() + "): " + StringUtils.listToEnglishCompound(taskIds, new LiquidMetal.StringProvider<Integer>() {
             @Override

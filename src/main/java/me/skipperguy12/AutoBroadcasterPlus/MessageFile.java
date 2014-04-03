@@ -31,6 +31,9 @@ public class MessageFile {
     // The messages parsed from messagesFile
     private final List<String> messages;
 
+    // Delimeter to split messages by
+    private final String delimeter;
+
 
     public MessageFile(File file) {
         Log.debug("Attempting to parse message file at " + file.getAbsolutePath());
@@ -40,9 +43,9 @@ public class MessageFile {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                Log.debug("Created new file");
+                Log.log("File " + file.getName() + " didn't exist, creating new file.");
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.log(e);
             }
         }
 
@@ -63,6 +66,7 @@ public class MessageFile {
         }
 
         // Parse messages into list
+        delimeter = Config.getSettingFromWorld(world, "delimeter", Config.Broadcaster.Global.delimeter);
         String contents = "";
         try {
             contents = FileUtils.readFileToString(file);
@@ -71,7 +75,7 @@ public class MessageFile {
             throw new IllegalArgumentException("Cannot read file at location "
                     + file.getAbsolutePath());
         }
-        messages = Arrays.asList(contents.split(Config.Broadcaster.delimeter));
+        messages = Arrays.asList(contents.split(delimeter));
         Log.debug("Messages in this file: " + me.skipperguy12.autobroadcasterplus.utils.StringUtils.listToEnglishCompound(messages, new LiquidMetal.StringProvider<String>() {
             @Override
             public String get(String c) {

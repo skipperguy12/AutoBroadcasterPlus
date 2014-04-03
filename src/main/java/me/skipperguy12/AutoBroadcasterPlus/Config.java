@@ -1,5 +1,6 @@
 package me.skipperguy12.autobroadcasterplus;
 
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -13,6 +14,24 @@ public class Config {
 
     protected static FileConfiguration config;
     protected static File dataFolder;
+
+
+    /**
+     * Gets a casted object from a path in config, returns def if null
+     *
+     * @param world   World to get setting from
+     * @param setting setting value to get
+     * @param def     def object to return if null
+     * @param <T>     object type
+     * @return casted object from path, def if null
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getSettingFromWorld(World world, String setting, Object def) {
+        if (world != null)
+            return (T) config.get("broadcaster." + world.getName() + "." + setting, def);
+        else
+            return (T) config.get("broadcaster.global." + setting, def);
+    }
 
 
     /**
@@ -71,36 +90,33 @@ public class Config {
      * Config section; broadcaster section
      */
     public static class Broadcaster {
-        /**
-         * Config variable; who is the announcer?
-         */
-        public static String announcerName = get("broadcaster.announcerName", "[&4AutoBroadcaster&f]: ");
+        public static class Global {
 
-
-        /**
-         * Config variable; how often, in seconds, should the message be broadcasted?
-         */
-        public static Integer interval = get("broadcaster.interval", 60);
-
-        /**
-         * Config variable; is debugging enabled?
-         */
-        public static boolean debugging = get("broadcaster.debugging", false);
-
-        /**
-         * Config variable; delimeter to split messages by
-         */
-        public static String delimeter = get("broadcaster.delimeter", "\n");
-
-        /**
-         * Config variable; should messages be broadcasted to console?
-         */
-        public static boolean broadcast_to_console = get("broadcaster.broadcast-to-console", false);
-
-        /**
-         * Config variable; min number of people before messages will be broadcasted
-         */
-        public static Integer min_players = get("broadcaster.min-players", 1);
+            /**
+             * Config variable; who is the announcer?
+             */
+            public static String announcerName = get("broadcaster.global.announcerName", "[&4AutoBroadcaster&f]: ");
+            /**
+             * Config variable; how often, in seconds, should the message be broadcasted?
+             */
+            public static Integer interval = get("broadcaster.global.interval", 60);
+            /**
+             * Config variable; is debugging enabled?
+             */
+            public static boolean debugging = get("broadcaster.global.debugging", false);
+            /**
+             * Config variable; delimeter to split messages by
+             */
+            public static String delimeter = get("broadcaster.global.delimeter", "\n");
+            /**
+             * Config variable; should messages be broadcasted to console?
+             */
+            public static boolean broadcast_to_console = get("broadcaster.global.broadcast-to-console", false);
+            /**
+             * Config variable; min number of people before messages will be broadcasted
+             */
+            public static Integer min_players = get("broadcaster.global.min-players", 1);
+        }
 
 
     }
