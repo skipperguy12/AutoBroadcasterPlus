@@ -13,6 +13,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+
 /**
  * Plugin main class
  */
@@ -66,6 +68,14 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         // Set up commands and register listeners
         this.setupCommands();
         this.registerListeners();
+
+
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
 
     }
 
