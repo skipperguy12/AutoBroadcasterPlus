@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>AutoBroadcasterPlus</groupId>
-  <artifactId>AutoBroadcasterPlus</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
-  <name>AutoBroadcasterPlus</name>
-  <description>Automatic broadcasting plugin</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>AutoBroadcasterPlus</groupId>
+    <artifactId>AutoBroadcasterPlus</artifactId>
+    <version>1.1.2-SNAPSHOT</version>
+    <name>AutoBroadcasterPlus</name>
+    <description>Automatic broadcasting plugin</description>
 
     <dependencies>
         <dependency>
@@ -48,8 +49,17 @@
             <version>R6</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>net.gravitydevelopment.updater</groupId>
+            <artifactId>updater</artifactId>
+            <version>2.1</version>
+        </dependency>
     </dependencies>
     <repositories>
+        <repository>
+            <id>gravity-repo</id>
+            <url>http://repo.gravitydevelopment.net</url>
+        </repository>
         <repository>
             <id>repo.oc.tc</id>
             <url>http://repo.oc.tc/content/repositories/snapshots/</url>

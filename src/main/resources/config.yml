@@ -1,6 +1,12 @@
+general:
+    debugging: false
+updater:
+    #The type of download, see here for options: http://tinyurl.com/la3r9fd
+    type: DEFAULT
+    #Should the plugin announce a downloads progress? Will be overridden by debugging option!
+    announce-output: false
 broadcaster:
     #Should the plugin debug?
-    debugging: false
 
     global:
         #Who will be the announcer? Ex: [AutoBroadcaster]: Message

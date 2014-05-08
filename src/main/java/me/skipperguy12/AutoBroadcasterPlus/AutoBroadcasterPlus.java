@@ -5,6 +5,7 @@ import com.sk89q.minecraft.util.commands.*;
 import me.skipperguy12.autobroadcasterplus.commands.AutoBroadcasterParentCommand;
 import me.skipperguy12.autobroadcasterplus.settings.Settings;
 import me.skipperguy12.autobroadcasterplus.utils.Log;
+import net.gravitydevelopment.updater.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,6 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
 
 /**
  * Plugin main class
@@ -42,14 +45,18 @@ public class AutoBroadcasterPlus extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+
         saveDefaultConfig();
         Config.load(this, "config.yml");
+
+        // Auto updater for the plugin
+        Updater updater = new Updater(this, 48752, this.getFile(), Config.Updater.type, Config.Updater.announceOutput);
 
         // Set singleton instance
         instance = this;
 
         Log.load(this);
-        Log.setDebugging(Config.Broadcaster.Global.debugging);
+        Log.setDebugging(Config.General.debugging);
 
         messanger = new Messenger(getDataFolder());
 
@@ -67,6 +74,12 @@ public class AutoBroadcasterPlus extends JavaPlugin {
         this.setupCommands();
         this.registerListeners();
 
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            Log.debug("Failed to submit metrics stats for autobroadcasterplus");
+        }
     }
 
     /**

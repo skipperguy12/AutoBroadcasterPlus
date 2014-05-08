@@ -27,10 +27,8 @@ public class Config {
      */
     @SuppressWarnings("unchecked")
     public static <T> T getSettingFromWorld(World world, String setting, Object def) {
-        if (world != null)
-            return (T) config.get("broadcaster." + world.getName() + "." + setting, def);
-        else
-            return (T) config.get("broadcaster.global." + setting, def);
+        if (world != null) return (T) config.get("broadcaster." + world.getName() + "." + setting, def);
+        else return (T) config.get("broadcaster.global." + setting, def);
     }
 
 
@@ -85,6 +83,16 @@ public class Config {
         config = YamlConfiguration.loadConfiguration(new File(dataFolder, fileName));
     }
 
+    /**
+     * Config section; general options
+     */
+    public static class General {
+        /**
+         * Config variable; is debugging enabled?
+         */
+        public static boolean debugging = get("general.debugging", false);
+
+    }
 
     /**
      * Config section; broadcaster section
@@ -101,10 +109,6 @@ public class Config {
              */
             public static Integer interval = get("broadcaster.global.interval", 60);
             /**
-             * Config variable; is debugging enabled?
-             */
-            public static boolean debugging = get("broadcaster.global.debugging", false);
-            /**
              * Config variable; delimeter to split messages by
              */
             public static String delimeter = get("broadcaster.global.delimeter", "\n");
@@ -120,4 +124,20 @@ public class Config {
 
 
     }
-} 
+
+    /**
+     * Config section; net.gravitydevelopment.updater configuration
+     */
+    public static class Updater {
+        // Gets the String-casted config option
+        private static String stringType = get("updater.type", net.gravitydevelopment.updater.Updater.UpdateType.DEFAULT.toString());
+        /**
+         * Config variable; The type of download that should be performed by AutoBroadcasterPlus, DEFAULT by default
+         */
+        public static net.gravitydevelopment.updater.Updater.UpdateType type = net.gravitydevelopment.updater.Updater.UpdateType.valueOf(stringType);
+        /**
+         * Config variable; Should updater report back about the progress of any downloads?
+         */
+        public static boolean announceOutput = get("updater.announce-output", false);
+    }
+}

@@ -6,6 +6,7 @@ import java.util.Collection;
  * Direct port of the JavaScript LiquidMetal. https://github.com/rmm5t/liquidmetal
  *
  * @author Steve Anton
+ *         Modified by @skipperguy12 and @molenzwiebel
  */
 public class LiquidMetal {
     /**
@@ -71,13 +72,12 @@ public class LiquidMetal {
     /**
      * Gets closest match from a query against a Collection of data
      *
-     * @param query String to find closest match to
-     * @param coll Collection to search from
+     * @param query    String to find closest match to
+     * @param coll     Collection to search from
      * @param minScore The minimum score needed to have any match at all (defines closest)
      * @return Object closest match, null if not found
      */
-    public static <E> E fuzzyMatch(Iterable<E> coll, String query, StringProvider<E> provider,
-                                   double minScore) {
+    public static <E> E fuzzyMatch(Iterable<E> coll, String query, StringProvider<E> provider, double minScore) {
         E closestMatch = null;
         double closestMatchScore = 0.0D;
 
@@ -112,12 +112,9 @@ public class LiquidMetal {
     public static String prettifyCol(Collection<?> col) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < col.size(); i++)
-            if (i != 0 && i == col.size() - 1)
-                sb.append(" and " + col.toArray()[i]);
-            else if (i != 0)
-                sb.append(", " + col.toArray()[i]);
-            else
-                sb.append(col.toArray()[i]);
+            if (i != 0 && i == col.size() - 1) sb.append(" and " + col.toArray()[i]);
+            else if (i != 0) sb.append(", " + col.toArray()[i]);
+            else sb.append(col.toArray()[i]);
         return sb.toString();
     }
 
